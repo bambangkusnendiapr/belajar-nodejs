@@ -26,6 +26,45 @@ yargs.command({
     handler(argv) {
         contacts.simpanContact(argv.nama, argv.email, argv.noHP)
     }
+}).demandCommand();
+
+//menampilkan kontak
+yargs.command({
+    command: 'list',
+    describe: 'Menampilkan kontak',
+    handler() {
+        contacts.listContact();
+    }
 })
+
+yargs.command({
+    command: 'detail',
+    describe: 'Menampilkan detail kontak',
+    builder: {
+        nama: {
+            describe: 'Nama Lengkap',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        contacts.detailContact(argv.nama);
+    }
+});
+
+yargs.command({
+    command: 'delete',
+    describe: 'Menghapus kontak',
+    builder: {
+        nama: {
+            describe: 'Nama Lengkap',
+            demandOption: true,
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        contacts.deleteContact(argv.nama);
+    }
+});
 
 yargs.parse()
