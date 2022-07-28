@@ -1,11 +1,31 @@
-const contacts = require('./contacts')
+// Contact Apps Bagian 2
+const yargs = require('yargs');
+const contacts = require('./contacts');
 
-const main = async () => {
-    const nama = await contacts.tulisPertanyaan('Nama: ');
-    const email = await contacts.tulisPertanyaan('Email: ');
-    const noHP = await contacts.tulisPertanyaan('No HP: ');
+//mengambil argumen dari command line
+yargs.command({
+    command: 'add',
+    describe: 'Tambah', //keterangan
+    builder: {
+        nama: {
+            describe: 'Nama Lengkap',
+            demandOption: true, //mandatory
+            type: 'string'
+        },
+        email: {
+            describe: 'Email',
+            demandOption: false, //mandatory
+            type: 'string'
+        },
+        noHP: {
+            describe: 'Nomor HP',
+            demandOption: true, //mandatory
+            type: 'string'
+        }
+    },
+    handler(argv) {
+        contacts.simpanContact(argv.nama, argv.email, argv.noHP)
+    }
+})
 
-    contacts.simpanContact(nama, email, noHP);
-};
-
-main();
+yargs.parse()
