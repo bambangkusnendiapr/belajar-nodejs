@@ -1,6 +1,6 @@
 const express = require('express')
 const expressLayouts = require('express-ejs-layouts');
-const {loadContact, findContact, addContact, cekDuplikat} = require('./utils/contacts')
+const {loadContact, findContact, addContact, cekDuplikat, deleteContact, updateContact} = require('./utils/contacts')
 const { body, validationResult, check } = require('express-validator');
 const session = require('express-session')
 const flash = require('connect-flash');
@@ -107,6 +107,65 @@ app.post(
     } else {
       addContact(req.body)
       req.flash('msg', 'Berhasil ditambahkan')
+      res.redirect('/contact')
+    }
+})
+
+app.get('/contact/delete/:nama', (req, res) => {
+  const contact = findContact(req.params.nama)
+
+  //jika tidak ada
+  if(!contact) {
+    res.status(404)
+    res.send('<h1>404</h1>')
+  } else {
+    deleteContact(req.params.nama)
+    req.flash('msg', 'Berhasil dihapus')
+    res.redirect('/contact')
+  }
+})
+
+//route edit
+app.get('/contact/edit/:nama', (req, res) => {
+
+  const contact = findContact(req.params.nama)
+  res.render('edit-contact', {
+    layout: 'layouts/main',
+    title: 'Edit Contact',
+    contact
+  })
+})
+
+app.post(
+  '/contact/update', 
+  [
+    body('nama').custom((value, {req}) => {
+      // console.log(`lama${req.body.oldNama}yaa`);
+      const duplikat = cekDuplikat(value)
+      if(value !== req.body.oldNama && duplikat) {
+      // if(duplikat) {
+        throw new Error('Nama terdaftar');
+      }
+      return true;
+    }),
+    check('email', 'Email tidak valid').isEmail(),
+    check('nohp', 'No HP tidak valid').isMobilePhone('id-ID'),
+  ],
+  (req, res) => {
+
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      // return res.status(400).json({ errors: errors.array() });
+      res.render('edit-contact', {
+        layout: 'layouts/main',
+        title: 'Edit Contact',
+        errors: errors.array(),
+        contact: req.body
+      })
+    } else {
+      // res.send(`lama${req.body.nama}baru${req.body.oldNama}yaa`)
+      updateContact(req.body)
+      req.flash('msg', 'Berhasil diubah')
       res.redirect('/contact')
     }
 })

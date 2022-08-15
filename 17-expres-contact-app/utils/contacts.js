@@ -40,4 +40,25 @@ const cekDuplikat = (nama) => {
     return contacts.find((contact) => contact.nama === nama)
 }
 
-module.exports = {loadContact, findContact, addContact, cekDuplikat}
+const deleteContact = (nama) => {
+    const contacts = loadContact()
+    const filterContacts = contacts.filter((contact) => contact.nama !== nama)
+    saveContacts(filterContacts)
+}
+
+const updateContact = (contactBaru) => {
+    // console.log(`ada${contactBaru.oldNama}yaa`);
+    // if(contactBaru.oldNama == 'Apri') {
+    //     console.log('sama');
+    // } else {
+    //     console.log('beda');
+    // }
+    const contacts = loadContact();
+    const filterContacts = contacts.filter((contact) => contact.nama != contactBaru.oldNama)
+    console.log(filterContacts, contactBaru);
+    delete contactBaru.oldNama;
+    filterContacts.push(contactBaru);
+    saveContacts(filterContacts);    
+}
+
+module.exports = {loadContact, findContact, addContact, cekDuplikat, deleteContact, updateContact}
